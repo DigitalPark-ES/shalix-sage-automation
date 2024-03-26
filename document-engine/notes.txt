@@ -1,0 +1,3 @@
+1. Improve file processing by using an in-memory database to track processed files and avoid duplications.
+2. Merge files by CIF
+3. Order Pages sequence
