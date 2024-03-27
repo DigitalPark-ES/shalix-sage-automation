@@ -368,8 +368,7 @@ def main():
 
 main()
 
-## Reprocesar
-## Validar salidas con albaranes
+## TODO: CIF en albaranes
 ## TODO: Procesar todo lo que esta en la carpeta por separado
 ## TODO: Eliminar archivo al procesarse completamente SI DIFERENTE DE FAILED
 ## TODO: Function para crear usuario
