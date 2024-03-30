@@ -1,4 +1,4 @@
-import {onRequest} from "firebase-functions/v2/https";
+// import {onRequest} from "firebase-functions/v2/https";
 import { onDocumentCreated} from "firebase-functions/v2/firestore";
 import * as logger from "firebase-functions/logger";
 import {getAuth} from 'firebase-admin/auth';
@@ -9,10 +9,10 @@ import { getFirestore } from "firebase-admin/firestore";
 
 initializeApp()
 
-export const helloWorld = onRequest((request, response) => {
-  logger.info("Hello logs!", {structuredData: true});
-  response.send("Hello from Firebase!");
-});
+// export const helloWorld = onRequest((request, response) => {
+//   logger.info("Hello logs!", {structuredData: true});
+//   response.send("Hello from Firebase!");
+// });
 
 export const onUserCreated = onDocumentCreated("/users/{userId}", async (event) => {
   logger.info("Creating new user with data: ", event.data);
