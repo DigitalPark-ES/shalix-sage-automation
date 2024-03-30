@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import { useMemo, useEffect, useReducer, useCallback } from 'react';
-import { doc, getDoc, setDoc, collection, getFirestore } from 'firebase/firestore';
+// import { doc, getDoc, setDoc, collection, getFirestore } from 'firebase/firestore';
+import { doc, setDoc, collection, getFirestore } from 'firebase/firestore';
 import {
   getAuth,
   signOut,
@@ -54,32 +55,31 @@ export function AuthProvider({ children }) {
     try {
       onAuthStateChanged(AUTH, async (user) => {
         if (user) {
-          if (user.emailVerified) {
-            const userProfile = doc(DB, 'users', user.uid);
+          // if (user.emailVerified) {
+            // const userProfile = doc(DB, 'users', user.uid);
 
-            const docSnap = await getDoc(userProfile);
+            // const docSnap = await getDoc(userProfile);
 
-            const profile = docSnap.data();
-
+            // const profile = docSnap.data();
             dispatch({
               type: 'INITIAL',
               payload: {
                 user: {
                   ...user,
-                  ...profile,
+                  // ...profile,
                   id: user.uid,
                   role: 'admin',
                 },
               },
             });
-          } else {
-            dispatch({
-              type: 'INITIAL',
-              payload: {
-                user: null,
-              },
-            });
-          }
+          // } else {
+          //   dispatch({
+          //     type: 'INITIAL',
+          //     payload: {
+          //       user: null,
+          //     },
+          //   });
+          // }
         } else {
           dispatch({
             type: 'INITIAL',
@@ -209,7 +209,7 @@ export function AuthProvider({ children }) {
    * (1) If skip emailVerified
    * const checkAuthenticated = state.user?.emailVerified ? 'authenticated' : 'unauthenticated';
    */
-  const checkAuthenticated = state.user?.emailVerified ? 'authenticated' : 'unauthenticated';
+  const checkAuthenticated = state.user ? 'authenticated' : 'unauthenticated';
 
   const status = state.loading ? 'loading' : checkAuthenticated;
 

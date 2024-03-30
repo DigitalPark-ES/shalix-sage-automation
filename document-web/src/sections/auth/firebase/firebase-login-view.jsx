@@ -3,17 +3,13 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 
-import Link from '@mui/material/Link';
 import Alert from '@mui/material/Alert';
 import Stack from '@mui/material/Stack';
-import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
 import InputAdornment from '@mui/material/InputAdornment';
 
-import { paths } from 'src/routes/paths';
-import { RouterLink } from 'src/routes/components';
 import { useRouter, useSearchParams } from 'src/routes/hooks';
 
 import { useBoolean } from 'src/hooks/use-boolean';
@@ -27,7 +23,7 @@ import FormProvider, { RHFTextField } from 'src/components/hook-form';
 // ----------------------------------------------------------------------
 
 export default function FirebaseLoginView() {
-  const { login, loginWithGoogle, loginWithGithub, loginWithTwitter } = useAuthContext();
+  const { login } = useAuthContext();
 
   const router = useRouter();
 
@@ -40,8 +36,8 @@ export default function FirebaseLoginView() {
   const password = useBoolean();
 
   const LoginSchema = Yup.object().shape({
-    email: Yup.string().required('Email is required').email('Email must be a valid email address'),
-    password: Yup.string().required('Password is required'),
+    email: Yup.string().required('Correo electrónico es requerido').email('Correo debe ser válido'),
+    password: Yup.string().required('Contraseña requerida'),
   });
 
   const defaultValues = {
@@ -72,51 +68,21 @@ export default function FirebaseLoginView() {
     }
   });
 
-  const handleGoogleLogin = async () => {
-    try {
-      await loginWithGoogle?.();
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const handleGithubLogin = async () => {
-    try {
-      await loginWithGithub?.();
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const handleTwitterLogin = async () => {
-    try {
-      await loginWithTwitter?.();
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
   const renderHead = (
     <Stack spacing={2} sx={{ mb: 5 }}>
-      <Typography variant="h4">Sign in to Minimal</Typography>
-
-      <Stack direction="row" spacing={0.5}>
-        <Typography variant="body2">New user?</Typography>
-
-        <Link component={RouterLink} href={paths.auth.firebase.register} variant="subtitle2">
-          Create an account
-        </Link>
-      </Stack>
+      <Typography variant="h4">Ingresar a Portal Shalix</Typography>
     </Stack>
   );
 
   const renderForm = (
     <Stack spacing={2.5}>
-      <RHFTextField name="email" label="Email address" />
+      <RHFTextField 
+        name="email" 
+        label="Correo electrónico" />
 
       <RHFTextField
         name="password"
-        label="Password"
+        label="Contraseña"
         type={password.value ? 'text' : 'password'}
         InputProps={{
           endAdornment: (
@@ -129,7 +95,7 @@ export default function FirebaseLoginView() {
         }}
       />
 
-      <Link
+      {/* <Link
         component={RouterLink}
         href={paths.auth.firebase.forgotPassword}
         variant="body2"
@@ -138,7 +104,7 @@ export default function FirebaseLoginView() {
         sx={{ alignSelf: 'flex-end' }}
       >
         Forgot password?
-      </Link>
+      </Link> */}
 
       <LoadingButton
         fullWidth
@@ -151,37 +117,6 @@ export default function FirebaseLoginView() {
         Login
       </LoadingButton>
     </Stack>
-  );
-
-  const renderLoginOption = (
-    <div>
-      <Divider
-        sx={{
-          my: 2.5,
-          typography: 'overline',
-          color: 'text.disabled',
-          '&:before, :after': {
-            borderTopStyle: 'dashed',
-          },
-        }}
-      >
-        OR
-      </Divider>
-
-      <Stack direction="row" justifyContent="center" spacing={2}>
-        <IconButton onClick={handleGoogleLogin}>
-          <Iconify icon="eva:google-fill" color="#DF3E30" />
-        </IconButton>
-
-        <IconButton color="inherit" onClick={handleGithubLogin}>
-          <Iconify icon="eva:github-fill" />
-        </IconButton>
-
-        <IconButton onClick={handleTwitterLogin}>
-          <Iconify icon="eva:twitter-fill" color="#1C9CEA" />
-        </IconButton>
-      </Stack>
-    </div>
   );
 
   return (
@@ -197,8 +132,6 @@ export default function FirebaseLoginView() {
       <FormProvider methods={methods} onSubmit={onSubmit}>
         {renderForm}
       </FormProvider>
-
-      {renderLoginOption}
     </>
   );
 }

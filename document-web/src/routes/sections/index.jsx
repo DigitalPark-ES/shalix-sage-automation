@@ -1,11 +1,11 @@
 import { Navigate, useRoutes } from 'react-router-dom';
 
-import MainLayout from 'src/layouts/main';
+// import MainLayout from 'src/layouts/main';
 
 // import { PATH_AFTER_LOGIN } from 'src/config-global';
 import { authRoutes } from './auth';
-import { authDemoRoutes } from './auth-demo';
-import { HomePage, mainRoutes } from './main';
+// import { authDemoRoutes } from './auth-demo';
+import { mainRoutes } from './main';
 import { dashboardRoutes } from './dashboard';
 import { componentsRoutes } from './components';
 
@@ -24,16 +24,12 @@ export default function Router() {
     // SET INDEX PAGE WITH HOME PAGE
     {
       path: '/',
-      element: (
-        <MainLayout>
-          <HomePage />
-        </MainLayout>
-      ),
+      element: <Navigate to='/auth/login' replace />,
     },
 
     // Auth routes
     ...authRoutes,
-    ...authDemoRoutes,
+    // ...authDemoRoutes,
 
     // Dashboard routes
     ...dashboardRoutes,
