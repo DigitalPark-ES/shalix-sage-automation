@@ -3,6 +3,7 @@ import shutil
 import sys
 import re
 import sqlite3
+import time
 from PyPDF2 import PdfReader, PdfWriter
 from loguru import logger
 import firebase_admin
@@ -17,7 +18,7 @@ output_final_path = os.path.join(workspace_path, 'output_final_path')
 log_path = os.path.join(workspace_path, 'logs', 'app.log')
 db_path = os.path.join(workspace_path, 'db')
 db_file = os.path.join(db_path, 'documents_splitter.db')
-bucket_name = 'shalix-pc-dev.appspot.com'
+bucket_name = 'shalix-automation-dev.appspot.com'
 
 # PENDING | MERGED | READY | FAILED | UPLOADED | UPLOAD_FAILED
 
@@ -70,7 +71,7 @@ def copy_file(source, target):
         new_file.write(content)
 
 def is_invoice(pdf_text):
-    return not "LA FACTURA SE TRAMITA" in pdf_text
+    return not "RECUERDE PARA PEDIDOS POR INTERNET" in pdf_text
 
 def remove_directory(path):
     try:
@@ -120,8 +121,8 @@ def insert_merged_invoice(doc_type, doc_number, client_id, cif, emited_at, total
         'READY' if success else 'FAILED',
         doc_number, client_id, cif, emited_at, 1, total, path)
 
-def insert_albaran(doc_number, client_id, emited_at, page, total, path):
-    insert_document('ALBARAN', 'PENDING', doc_number, client_id, 'NONE', emited_at, page, total, path)
+def insert_albaran(doc_number, cif, emited_at, page, total, path):
+    insert_document('ALBARAN', 'PENDING', doc_number, 'client_id', cif, emited_at, page, total, path)
 
 def update_merged_invoices(doc_number, client_id, doc_type):
     update_document(doc_number, client_id, 'MERGED', doc_type)
@@ -157,7 +158,7 @@ def find_documents(status='PENDING'):
     
     return documents_map
 
-def update_document(id, status):
+def update_document_by_id(id, status):
     db_cursor.execute('''
                    UPDATE documents SET status = ?
                       WHERE id = ?
@@ -216,7 +217,7 @@ def map_documents(splitted_documents_source_path):
         if cif and invoice_number and invoice_date and client_id:
             page = get_new_pdf_sequence(invoice_number)
             total = total_result.group(1) if total_result else 0
-            new_pdf_file_name = f"INVOICE_{invoice_number}_{client_id}_{cif}_{invoice_date}_{page}.pdf"
+            new_pdf_file_name = f"INVOICE_{invoice_number}_{cif}_{invoice_date}_{page}.pdf"
             new_pdf_file_path = os.path.join(output_final_path, new_pdf_file_name)
             copy_file(invoice_pdf_path, new_pdf_file_path)
             insert_new_invoice(invoice_number, client_id, cif, invoice_date, page, total, new_pdf_file_path)
@@ -228,24 +229,25 @@ def map_documents(splitted_documents_source_path):
     def map_albaran(index, pdf_text):
         albaran_number = re.search(r'PVV\n(\d+)', pdf_text).group(1)
         albaran_date = re.search(r'(\d{2}/\d{2}/\d{4})', pdf_text).group(1).strip().replace("/", "-")
-        client_number = re.search(r'CLIENTE\n([A-Za-z0-9]+)', pdf_text).group(1)
-        total_result = re.search(r'LÍQUIDO\(EUR\):\s*(\d{1,3}(?:,\d{2}))', pdf_text)
+        total_result = re.search(r'BULTOS\s+(\d+,\d+)\s+VOLUMEN', pdf_text)
+        cif = re.search(r'(\w+) CONSULTAS LLAME TELEFONO', pdf_text).group(1)
 
-        if albaran_number and albaran_date and client_number:
+        if albaran_number and albaran_date and cif:
             page = get_new_pdf_sequence(albaran_number)
             total = total_result.group(1) if total_result else 0
-            new_pdf_file_name = f"ALBARAN_{albaran_number}_{client_number}_{albaran_date}_{page}.pdf"
+            new_pdf_file_name = f"ALBARAN_{albaran_number}_{cif}_{albaran_date}_{page}.pdf"
             new_pdf_file_path = os.path.join(output_final_path, new_pdf_file_name)
             copy_file(invoice_pdf_path, new_pdf_file_path)
-            insert_albaran(albaran_number, client_number, albaran_date, page, total, new_pdf_file_path)
-            logger.info(f"== - {index} Albaran PDF File Mapped for Client [{client_number}] [{new_pdf_file_path}] ✅")
+            insert_albaran(albaran_number, cif, albaran_date, page, total, new_pdf_file_path)
+            logger.info(f"== - {index} Albaran PDF File Mapped for CIF [{cif}] [{new_pdf_file_path}] ✅")
         else:
-            insert_albaran(albaran_number, client_number, albaran_date, page, 0, new_pdf_file_path, False)
+            insert_albaran(albaran_number, cif, albaran_date, page, 0, new_pdf_file_path, False)
             logger.error(f"== - {index} Albaran PDF Mapping failed for [{invoice_pdf_path}] ❌")
 
     for index, invoice_file_name in enumerate(os.listdir(splitted_documents_source_path)):
         try:
             invoice_pdf_path = os.path.join(splitted_documents_source_path, invoice_file_name)
+            logger.debug(f"*** Processing Albaran [{invoice_pdf_path}]")
             pdf_text = extract_text_from_pdf(invoice_pdf_path).upper()
             if is_invoice(pdf_text):
                 map_invoice(index + 1, pdf_text)
@@ -273,9 +275,8 @@ def merge_documents():
             with open(path, 'rb') as pdf_file:
                 opened_file = PdfReader(pdf_file)
                 merge_pdf.add_page(opened_file.pages[0])
-        
-        cif = cif if doc_type == 'INVOICE' else 'nocif'
-        merged_file_name = f"{doc_type}_{doc_number}_{client_id}_{cif}_{emited_at}_all.pdf"
+
+        merged_file_name = f"{doc_type}_{doc_number}_{cif}_{emited_at}_all.pdf"
         merged_file_path = os.path.join(output_final_path, merged_file_name)
         create_pdf_file(merge_pdf, merged_file_path)
         insert_merged_invoice(doc_type, doc_number, client_id, cif, emited_at, total, merged_file_path)
@@ -315,11 +316,10 @@ def upload_documents():
         doc_type = document_row[8]
         upload_file_name=os.path.basename(path)
 
-        logger.info(f"=== Upload {doc_number}")
+        logger.info(f"=== Uploading {doc_number} [{upload_file_name}] path {path}")
 
         try:
-
-            blob = bucket.blob(f"documents/{doc_type}/{client_id}/{upload_file_name}")
+            blob = bucket.blob(f"documents/{cif}/{doc_type}/{upload_file_name}")
             blob.upload_from_filename(path)
 
             blob.make_public()
@@ -336,10 +336,10 @@ def upload_documents():
                 'pdf_url': pdf_url,
             })
 
-            update_document(id, 'UPLOADED')
-            logger.info(f"=== Upload {doc_number} uploaded: {pdf_url} ✅")
+            update_document_by_id(id, 'UPLOADED')
+            logger.info(f"=== Upload {doc_number} uploaded: {'pdf_url'} ✅")
         except Exception as e:
-            update_document(id, 'UPLOAD_FAILED')
+            update_document_by_id(id, 'UPLOAD_FAILED')
             logger.error(f"== ❌❌❌ Error {doc_number} id: {id}: [{e}]")
 
         db_connection.commit()
@@ -353,11 +353,14 @@ def main():
     check_workspace()
     configure_database()
     
-    # split_document_pages(os.path.join(input_path, 'ALBARAN.pdf')) # Detectar el nuevo archivo subido
-    # map_documents(output_s1_split_path)
-    # merge_documents()
-    # remove_directory(output_s1_split_path)
-    # upload_documents()
+    split_document_pages(os.path.join(input_path, 'single.pdf'))
+    map_documents(output_s1_split_path)
+    merge_documents()
+    remove_directory(output_s1_split_path)
+
+    time.sleep(2)
+
+    upload_documents()
 
 
     # TODO In another function, Do the Cleanup, remove Db records, remove folders.
@@ -368,7 +371,12 @@ def main():
 
 main()
 
-## TODO: CIF en albaranes
 ## TODO: Procesar todo lo que esta en la carpeta por separado
 ## TODO: Eliminar archivo al procesarse completamente SI DIFERENTE DE FAILED
-## TODO: Function para crear usuario
+
+
+## /
+## Documents
+    ## CIF
+          ## ALBARAN
+          ## FACTURAS
