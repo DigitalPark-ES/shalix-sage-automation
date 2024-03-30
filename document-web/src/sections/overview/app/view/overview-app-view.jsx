@@ -1,33 +1,18 @@
-import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
-import { useTheme } from '@mui/material/styles';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Unstable_Grid2';
 
 import { useMockedUser } from 'src/hooks/use-mocked-user';
 
 import { SeoIllustration } from 'src/assets/illustrations';
-import { _appAuthors, _appRelated, _appFeatured, _appInvoices, _appInstalled } from 'src/_mock';
 
 import { useSettingsContext } from 'src/components/settings';
 
-import AppWidget from '../app-widget';
 import AppWelcome from '../app-welcome';
-import AppFeatured from '../app-featured';
-import AppNewInvoice from '../app-new-invoice';
-import AppTopAuthors from '../app-top-authors';
-import AppTopRelated from '../app-top-related';
-import AppAreaInstalled from '../app-area-installed';
-import AppWidgetSummary from '../app-widget-summary';
-import AppCurrentDownload from '../app-current-download';
-import AppTopInstalledCountries from '../app-top-installed-countries';
-
 // ----------------------------------------------------------------------
 
 export default function OverviewAppView() {
   const { user } = useMockedUser();
-
-  const theme = useTheme();
 
   const settings = useSettingsContext();
 
@@ -36,22 +21,22 @@ export default function OverviewAppView() {
       <Grid container spacing={3}>
         <Grid xs={12} md={8}>
           <AppWelcome
-            title={`Welcome back 👋 \n ${user?.displayName}`}
-            description="If you are going to use a passage of Lorem Ipsum, you need to be sure there isn't anything."
+            title={`Hola! 👋 \n ${user?.displayName}`}
+            description="En éste portal encontrarás tus facturas y albaranes."
             img={<SeoIllustration />}
             action={
               <Button variant="contained" color="primary">
-                Go Now
+                Entendido
               </Button>
             }
           />
         </Grid>
 
-        <Grid xs={12} md={4}>
+        {/* <Grid xs={12} md={4}>
           <AppFeatured list={_appFeatured} />
-        </Grid>
+        </Grid> */}
 
-        <Grid xs={12} md={4}>
+        {/* <Grid xs={12} md={4}>
           <AppWidgetSummary
             title="Total Active Users"
             percent={2.6}
@@ -60,9 +45,9 @@ export default function OverviewAppView() {
               series: [5, 18, 12, 51, 68, 11, 39, 37, 27, 20],
             }}
           />
-        </Grid>
+        </Grid> */}
 
-        <Grid xs={12} md={4}>
+        {/* <Grid xs={12} md={4}>
           <AppWidgetSummary
             title="Total Installed"
             percent={0.2}
@@ -84,9 +69,9 @@ export default function OverviewAppView() {
               series: [8, 9, 31, 8, 16, 37, 8, 33, 46, 31],
             }}
           />
-        </Grid>
+        </Grid> */}
 
-        <Grid xs={12} md={6} lg={4}>
+        {/* <Grid xs={12} md={6} lg={4}>
           <AppCurrentDownload
             title="Current Download"
             chart={{
@@ -98,8 +83,8 @@ export default function OverviewAppView() {
               ],
             }}
           />
-        </Grid>
-
+        </Grid> */}
+{/* 
         <Grid xs={12} md={6} lg={8}>
           <AppAreaInstalled
             title="Area Installed"
@@ -198,7 +183,7 @@ export default function OverviewAppView() {
               }}
             />
           </Stack>
-        </Grid>
+        </Grid> */}
       </Grid>
     </Container>
   );

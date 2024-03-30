@@ -146,6 +146,16 @@ export const paths = {
         edit: `${ROOTS.DASHBOARD}/invoice/${MOCK_ID}/edit`,
       },
     },
+    albaranes: {
+      root: `${ROOTS.DASHBOARD}/albaranes`,
+      new: `${ROOTS.DASHBOARD}/albaranes/new`,
+      details: (id) => `${ROOTS.DASHBOARD}/albaranes/${id}`,
+      edit: (id) => `${ROOTS.DASHBOARD}/albaranes/${id}/edit`,
+      demo: {
+        details: `${ROOTS.DASHBOARD}/albaranes/${MOCK_ID}`,
+        edit: `${ROOTS.DASHBOARD}/albaranes/${MOCK_ID}/edit`,
+      },
+    },
     post: {
       root: `${ROOTS.DASHBOARD}/post`,
       new: `${ROOTS.DASHBOARD}/post/new`,

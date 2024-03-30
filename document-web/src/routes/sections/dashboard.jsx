@@ -124,6 +124,16 @@ export const dashboardRoutes = [
         ],
       },
       {
+        path: 'albaranes',
+        children: [
+          { element: <InvoiceListPage />, index: true },
+          { path: 'list', element: <InvoiceListPage /> },
+          { path: ':id', element: <InvoiceDetailsPage /> },
+          { path: ':id/edit', element: <InvoiceEditPage /> },
+          { path: 'new', element: <InvoiceCreatePage /> },
+        ],
+      },
+      {
         path: 'post',
         children: [
           { element: <BlogPostsPage />, index: true },
