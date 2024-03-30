@@ -18,3 +18,5 @@ root.render(
     </BrowserRouter>
   </HelmetProvider>
 );
+
+// TODO: Profile data in submenu.

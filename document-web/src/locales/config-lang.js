@@ -1,36 +1,25 @@
 import merge from 'lodash/merge';
 // date fns
 import {
-  fr as frFRAdapter,
-  vi as viVNAdapter,
+  es as esESAdapter,
   enUS as enUSAdapter,
-  zhCN as zhCNAdapter,
-  arSA as arSAAdapter,
 } from 'date-fns/locale';
 
-// date pickers (MUI)
-import {
-  enUS as enUSDate,
-  frFR as frFRDate,
-  viVN as viVNDate,
-  zhCN as zhCNDate,
-} from '@mui/x-date-pickers/locales';
 // core (MUI)
 import {
   enUS as enUSCore,
-  frFR as frFRCore,
-  viVN as viVNCore,
-  zhCN as zhCNCore,
-  arSA as arSACore,
+  esES as esESCore,
 } from '@mui/material/locale';
 // data grid (MUI)
 import {
   enUS as enUSDataGrid,
-  frFR as frFRDataGrid,
-  viVN as viVNDataGrid,
-  zhCN as zhCNDataGrid,
-  arSD as arSDDataGrid,
+  esES as esESDataGrid,
 } from '@mui/x-data-grid';
+// date pickers (MUI)
+import {
+  enUS as enUSDate,
+  esES as esESDate,
+} from '@mui/x-date-pickers/locales';
 
 // PLEASE REMOVE `LOCAL STORAGE` WHEN YOU CHANGE SETTINGS.
 // ----------------------------------------------------------------------
@@ -48,52 +37,19 @@ export const allLangs = [
     },
   },
   {
-    label: 'French',
-    value: 'fr',
-    systemValue: merge(frFRDate, frFRDataGrid, frFRCore),
-    adapterLocale: frFRAdapter,
-    icon: 'flagpack:fr',
+    label: 'Español',
+    value: 'es',
+    systemValue: merge(esESDate, esESDataGrid, esESCore),
+    adapterLocale: esESAdapter,
+    icon: 'flagpack:es',
     numberFormat: {
-      code: 'fr-Fr',
+      code: 'en-ES',
       currency: 'EUR',
-    },
-  },
-  {
-    label: 'Vietnamese',
-    value: 'vi',
-    systemValue: merge(viVNDate, viVNDataGrid, viVNCore),
-    adapterLocale: viVNAdapter,
-    icon: 'flagpack:vn',
-    numberFormat: {
-      code: 'vi-VN',
-      currency: 'VND',
-    },
-  },
-  {
-    label: 'Chinese',
-    value: 'cn',
-    systemValue: merge(zhCNDate, zhCNDataGrid, zhCNCore),
-    adapterLocale: zhCNAdapter,
-    icon: 'flagpack:cn',
-    numberFormat: {
-      code: 'zh-CN',
-      currency: 'CNY',
-    },
-  },
-  {
-    label: 'Arabic',
-    value: 'ar',
-    systemValue: merge(arSDDataGrid, arSACore),
-    adapterLocale: arSAAdapter,
-    icon: 'flagpack:sa',
-    numberFormat: {
-      code: 'ar',
-      currency: 'AED',
     },
   },
 ];
 
-export const defaultLang = allLangs[0]; // English
+export const defaultLang = allLangs[1]; // Spanish
 
 // GET MORE COUNTRY FLAGS
 // https://icon-sets.iconify.design/flagpack/
