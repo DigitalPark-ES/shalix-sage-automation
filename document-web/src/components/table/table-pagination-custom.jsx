@@ -1,9 +1,7 @@
 import PropTypes from 'prop-types';
 
 import Box from '@mui/material/Box';
-import Switch from '@mui/material/Switch';
 import TablePagination from '@mui/material/TablePagination';
-import FormControlLabel from '@mui/material/FormControlLabel';
 
 // ----------------------------------------------------------------------
 
@@ -25,7 +23,7 @@ export default function TablePaginationCustom({
         }}
       />
 
-      {onChangeDense && (
+      {/* {onChangeDense && (
         <FormControlLabel
           label="Dense"
           control={<Switch checked={dense} onChange={onChangeDense} />}
@@ -38,7 +36,7 @@ export default function TablePaginationCustom({
             },
           }}
         />
-      )}
+      )} */}
     </Box>
   );
 }

@@ -6,7 +6,6 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
-import Button from '@mui/material/Button';
 import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
@@ -19,7 +18,6 @@ import { countries } from 'src/assets/data';
 
 import { useSnackbar } from 'src/components/snackbar';
 import FormProvider, {
-  RHFSwitch,
   RHFTextField,
   RHFUploadAvatar,
   RHFAutocomplete,
@@ -123,7 +121,7 @@ export default function AccountGeneral() {
               }
             />
 
-            <RHFSwitch
+            {/* <RHFSwitch
               name="isPublic"
               labelPlacement="start"
               label="Public Profile"
@@ -132,7 +130,7 @@ export default function AccountGeneral() {
 
             <Button variant="soft" color="error" sx={{ mt: 3 }}>
               Delete User
-            </Button>
+            </Button> */}
           </Card>
         </Grid>
 

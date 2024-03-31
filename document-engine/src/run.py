@@ -353,7 +353,7 @@ def main():
     check_workspace()
     configure_database()
     
-    split_document_pages(os.path.join(input_path, 'single.pdf'))
+    split_document_pages(os.path.join(input_path, '100_same.pdf'))
     map_documents(output_s1_split_path)
     merge_documents()
     remove_directory(output_s1_split_path)

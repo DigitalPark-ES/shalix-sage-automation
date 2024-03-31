@@ -32,6 +32,13 @@ const ITEMS = [...Array(3)].map((__, index) => {
   };
 });
 
+export const _facturas = [...Array(20)].map((_, index) => ({
+    id: _mock.id(index),
+    documentNumber: `AA${index}`,
+    emitedAt: new Date(),
+    total: 100.44
+  }));
+
 export const _invoices = [...Array(20)].map((_, index) => {
   const taxes = _mock.number.price(index + 1);
 

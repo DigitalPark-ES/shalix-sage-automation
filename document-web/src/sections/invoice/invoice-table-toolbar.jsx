@@ -2,14 +2,9 @@ import PropTypes from 'prop-types';
 import { useCallback } from 'react';
 
 import Stack from '@mui/material/Stack';
-import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
-import Checkbox from '@mui/material/Checkbox';
 import TextField from '@mui/material/TextField';
-import InputLabel from '@mui/material/InputLabel';
 import IconButton from '@mui/material/IconButton';
-import FormControl from '@mui/material/FormControl';
-import OutlinedInput from '@mui/material/OutlinedInput';
 import InputAdornment from '@mui/material/InputAdornment';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { formHelperTextClasses } from '@mui/material/FormHelperText';
@@ -24,23 +19,12 @@ export default function InvoiceTableToolbar({
   onFilters,
   //
   dateError,
-  serviceOptions,
 }) {
   const popover = usePopover();
 
   const handleFilterName = useCallback(
     (event) => {
       onFilters('name', event.target.value);
-    },
-    [onFilters]
-  );
-
-  const handleFilterService = useCallback(
-    (event) => {
-      onFilters(
-        'service',
-        typeof event.target.value === 'string' ? event.target.value.split(',') : event.target.value
-      );
     },
     [onFilters]
   );
@@ -73,33 +57,8 @@ export default function InvoiceTableToolbar({
           pr: { xs: 2.5, md: 1 },
         }}
       >
-        <FormControl
-          sx={{
-            flexShrink: 0,
-            width: { xs: 1, md: 180 },
-          }}
-        >
-          <InputLabel>Service</InputLabel>
-
-          <Select
-            multiple
-            value={filters.service}
-            onChange={handleFilterService}
-            input={<OutlinedInput label="Service" />}
-            renderValue={(selected) => selected.map((value) => value).join(', ')}
-            sx={{ textTransform: 'capitalize' }}
-          >
-            {serviceOptions.map((option) => (
-              <MenuItem key={option} value={option}>
-                <Checkbox disableRipple size="small" checked={filters.service.includes(option)} />
-                {option}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-
         <DatePicker
-          label="Start date"
+          label="Desde"
           value={filters.startDate}
           onChange={handleFilterStartDate}
           slotProps={{ textField: { fullWidth: true } }}
@@ -109,14 +68,14 @@ export default function InvoiceTableToolbar({
         />
 
         <DatePicker
-          label="End date"
+          label="Hasta"
           value={filters.endDate}
           onChange={handleFilterEndDate}
           slotProps={{
             textField: {
               fullWidth: true,
               error: dateError,
-              helperText: dateError && 'End date must be later than start date',
+              helperText: dateError && "Fecha debe ser mayor de 'Desde'",
             },
           }}
           sx={{
@@ -133,7 +92,7 @@ export default function InvoiceTableToolbar({
             fullWidth
             value={filters.name}
             onChange={handleFilterName}
-            placeholder="Search customer or invoice number..."
+            placeholder="Buscar por número de Factura..."
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
@@ -189,6 +148,5 @@ export default function InvoiceTableToolbar({
 InvoiceTableToolbar.propTypes = {
   dateError: PropTypes.bool,
   filters: PropTypes.object,
-  onFilters: PropTypes.func,
-  serviceOptions: PropTypes.array,
+  onFilters: PropTypes.func
 };

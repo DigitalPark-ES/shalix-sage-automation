@@ -4,10 +4,6 @@ import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import Breadcrumbs from '@mui/material/Breadcrumbs';
-
-import LinkItem from './link-item';
-
 // ----------------------------------------------------------------------
 
 export default function CustomBreadcrumbs({
@@ -19,7 +15,7 @@ export default function CustomBreadcrumbs({
   sx,
   ...other
 }) {
-  const lastLink = links[links.length - 1].name;
+  // const lastLink = links[links.length - 1].name;
 
   return (
     <Box sx={{ ...sx }}>
@@ -33,7 +29,7 @@ export default function CustomBreadcrumbs({
           )}
 
           {/* BREADCRUMBS */}
-          {!!links.length && (
+          {/* {!!links.length && (
             <Breadcrumbs separator={<Separator />} {...other}>
               {links.map((link) => (
                 <LinkItem
@@ -44,7 +40,7 @@ export default function CustomBreadcrumbs({
                 />
               ))}
             </Breadcrumbs>
-          )}
+          )} */}
         </Box>
 
         {action && <Box sx={{ flexShrink: 0 }}> {action} </Box>}
@@ -82,16 +78,16 @@ CustomBreadcrumbs.propTypes = {
 
 // ----------------------------------------------------------------------
 
-function Separator() {
-  return (
-    <Box
-      component="span"
-      sx={{
-        width: 4,
-        height: 4,
-        borderRadius: '50%',
-        bgcolor: 'text.disabled',
-      }}
-    />
-  );
-}
+// function Separator() {
+//   return (
+//     <Box
+//       component="span"
+//       sx={{
+//         width: 4,
+//         height: 4,
+//         borderRadius: '50%',
+//         bgcolor: 'text.disabled',
+//       }}
+//     />
+//   );
+// }
