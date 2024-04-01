@@ -24,6 +24,7 @@ export function useGetDocuments(documentType, cif) {
                     id: c.id,
                     documentNumber: data.doc_number,
                     total: parseFloat(data.total),
+                    downloadUri: data.pdf_url,
                     emitedAt: new Date(
                         parseInt(dateParts[2], 10), 
                         parseInt(dateParts[1], 10) - 1, 

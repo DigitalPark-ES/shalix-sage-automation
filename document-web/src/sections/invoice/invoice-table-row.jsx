@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
 import TableRow from '@mui/material/TableRow';
-import Checkbox from '@mui/material/Checkbox';
+// import Checkbox from '@mui/material/Checkbox';
 import TableCell from '@mui/material/TableCell';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
@@ -37,9 +37,9 @@ export default function InvoiceTableRow({
   return (
     <>
       <TableRow hover selected={selected}>
-        <TableCell padding="checkbox">
+        {/* <TableCell padding="checkbox">
           <Checkbox checked={selected} onClick={onSelectRow} />
-        </TableCell>
+        </TableCell> */}
 
         <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
           
@@ -88,10 +88,10 @@ export default function InvoiceTableRow({
           }}
         >
           <Iconify icon="solar:eye-bold" />
-          View
+          Ver Documento
         </MenuItem>
 
-        <MenuItem
+        {/* <MenuItem
           onClick={() => {
             onEditRow();
             popover.onClose();
@@ -99,7 +99,7 @@ export default function InvoiceTableRow({
         >
           <Iconify icon="eva:download-outline" />
           Download
-        </MenuItem>
+        </MenuItem> */}
       </CustomPopover>
 
       <ConfirmDialog

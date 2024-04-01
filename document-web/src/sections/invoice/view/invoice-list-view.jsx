@@ -110,8 +110,8 @@ export default function InvoiceListView({documentType, cif, heading}) {
   );
 
   const handleViewRow = useCallback(
-    (id) => {
-      router.push(paths.dashboard.invoice.details(id));
+    (downloadUri) => {
+      window.open(downloadUri, '_blank');
     },
     [router]
   );
@@ -204,7 +204,7 @@ export default function InvoiceListView({documentType, cif, heading}) {
                         row={row}
                         selected={table.selected.includes(row.id)}
                         onSelectRow={() => table.onSelectRow(row.id)}
-                        onViewRow={() => handleViewRow(row.id)}
+                        onViewRow={() => handleViewRow(row.downloadUri)}
                         onEditRow={() => handleEditRow(row.id)}
                         onDeleteRow={() => {}}
                       />

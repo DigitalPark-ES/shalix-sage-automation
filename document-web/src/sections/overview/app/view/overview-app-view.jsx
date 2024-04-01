@@ -1,18 +1,16 @@
-import Button from '@mui/material/Button';
+// import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Unstable_Grid2';
-
-import { useMockedUser } from 'src/hooks/use-mocked-user';
 
 import { SeoIllustration } from 'src/assets/illustrations';
 
 import { useSettingsContext } from 'src/components/settings';
-
+import { useAuthContext } from 'src/auth/hooks';
 import AppWelcome from '../app-welcome';
 // ----------------------------------------------------------------------
 
 export default function OverviewAppView() {
-  const { user } = useMockedUser();
+  const { user } = useAuthContext();
 
   const settings = useSettingsContext();
 
@@ -24,11 +22,11 @@ export default function OverviewAppView() {
             title={`Hola! 👋 \n ${user?.displayName}`}
             description="En éste portal encontrarás tus facturas y albaranes."
             img={<SeoIllustration />}
-            action={
-              <Button variant="contained" color="primary">
-                Entendido
-              </Button>
-            }
+            // action={
+            //   <Button variant="contained" color="primary">
+            //     Entendido
+            //   </Button>
+            // }
           />
         </Grid>
 
