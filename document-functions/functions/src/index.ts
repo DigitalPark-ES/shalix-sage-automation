@@ -24,7 +24,8 @@ export const onUserCreated = onDocumentCreated("/users/{userId}", async (event) 
   const lastName: string = event.data?.get("lastName");
   // const address: string = event.data?.get("address");
     
-  const userRecord = await getAuth().createUser( {
+  const userRecord = await getAuth().createUser({
+    uid: cif,
     email,
     password,
     displayName: `${name} ${lastName}`

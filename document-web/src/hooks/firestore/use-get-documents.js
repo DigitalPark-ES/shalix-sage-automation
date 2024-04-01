@@ -1,17 +1,21 @@
 import { useState } from "react";
-import { query, getDocs, collection, getFirestore } from "firebase/firestore";
+import { query, where, getDocs, collection, getFirestore } from "firebase/firestore";
 
 import { firebaseApp } from "src/auth/context/firebase/lib";
 
 const DB = getFirestore(firebaseApp);
 
-export function useGetDocuments() {
+export function useGetDocuments(documentType, cif) {
     const [documents, setDocuments] = useState([]);
     const [fetching, setFetching] = useState(false);
 
     const fetch = async () => {
         setFetching(true);
-        const docs = await getDocs(query(collection(DB, 'documents')));
+        const docs = await getDocs(
+            query(collection(DB, 'documents'), 
+                where("doc_type", "==", documentType),
+                where("cif", "==", cif),
+            ));
         if(!docs.empty) {
             setDocuments(docs.docs.map(c => {
                 const data = c.data();

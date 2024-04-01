@@ -1,5 +1,6 @@
 /* eslint-disable perfectionist/sort-imports */
 /* eslint-disable react-hooks/exhaustive-deps */
+import PropTypes from 'prop-types';
 import { useState, useEffect, useCallback } from 'react';
 
 import Card from '@mui/material/Card';
@@ -53,8 +54,8 @@ const defaultFilters = {
 
 // ----------------------------------------------------------------------
 
-export default function InvoiceListView() {
-  const { documents, fetch } = useGetDocuments(); // fetching
+export default function InvoiceListView({documentType, cif, heading}) {
+  const { documents, fetch } = useGetDocuments(documentType, cif); // fetching
 
   const settings = useSettingsContext();
 
@@ -127,7 +128,7 @@ export default function InvoiceListView() {
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading="Facturas"
+          heading={heading}
           sx={{
             mb: { xs: 3, md: 2 },
           }}
@@ -259,6 +260,14 @@ export default function InvoiceListView() {
   );
 }
 
+
+InvoiceListView.propTypes = {
+  documentType: PropTypes.string,
+  cif: PropTypes.string,
+  heading: PropTypes.string,
+};
+
+
 // ----------------------------------------------------------------------
 
 function applyFilter({ inputData, comparator, filters, dateError }) {
@@ -277,8 +286,7 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
   if (name) {
     inputData = inputData.filter(
       (invoice) =>
-        invoice.invoiceNumber.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
-        invoice.invoiceTo.name.toLowerCase().indexOf(name.toLowerCase()) !== -1
+        invoice.documentNumber.toLowerCase().indexOf(name.toLowerCase()) !== -1
     );
   }
 

@@ -1,34 +1,35 @@
 import * as Yup from 'yup';
-import { useCallback } from 'react';
+// import { useCallback } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
-import Stack from '@mui/material/Stack';
+// import Stack from '@mui/material/Stack';
 import Grid from '@mui/material/Unstable_Grid2';
-import Typography from '@mui/material/Typography';
-import LoadingButton from '@mui/lab/LoadingButton';
+// import Typography from '@mui/material/Typography';
+// import LoadingButton from '@mui/lab/LoadingButton';
 
-import { useMockedUser } from 'src/hooks/use-mocked-user';
+// import { useMockedUser } from 'src/hooks/use-mocked-user';
 
-import { fData } from 'src/utils/format-number';
+// import { fData } from 'src/utils/format-number';
 
-import { countries } from 'src/assets/data';
+// import { countries } from 'src/assets/data';
 
 import { useSnackbar } from 'src/components/snackbar';
 import FormProvider, {
   RHFTextField,
-  RHFUploadAvatar,
-  RHFAutocomplete,
+  // RHFUploadAvatar,
+  // RHFAutocomplete,
 } from 'src/components/hook-form';
+import { useAuthContext } from 'src/auth/hooks';
 
 // ----------------------------------------------------------------------
 
 export default function AccountGeneral() {
   const { enqueueSnackbar } = useSnackbar();
 
-  const { user } = useMockedUser();
+  const { user } = useAuthContext();
 
   const UpdateUserSchema = Yup.object().shape({
     displayName: Yup.string().required('Name is required'),
@@ -47,6 +48,8 @@ export default function AccountGeneral() {
 
   const defaultValues = {
     displayName: user?.displayName || '',
+    name: user?.name || '',
+    lastName: user?.lastName || '',
     email: user?.email || '',
     photoURL: user?.photoURL || null,
     phoneNumber: user?.phoneNumber || '',
@@ -57,6 +60,7 @@ export default function AccountGeneral() {
     zipCode: user?.zipCode || '',
     about: user?.about || '',
     isPublic: user?.isPublic || false,
+    cif: user?.cif || '',
   };
 
   const methods = useForm({
@@ -65,9 +69,9 @@ export default function AccountGeneral() {
   });
 
   const {
-    setValue,
+    // setValue,
     handleSubmit,
-    formState: { isSubmitting },
+    // formState: { isSubmitting },
   } = methods;
 
   const onSubmit = handleSubmit(async (data) => {
@@ -80,26 +84,26 @@ export default function AccountGeneral() {
     }
   });
 
-  const handleDrop = useCallback(
-    (acceptedFiles) => {
-      const file = acceptedFiles[0];
+  // const handleDrop = useCallback(
+  //   (acceptedFiles) => {
+  //     const file = acceptedFiles[0];
 
-      const newFile = Object.assign(file, {
-        preview: URL.createObjectURL(file),
-      });
+  //     const newFile = Object.assign(file, {
+  //       preview: URL.createObjectURL(file),
+  //     });
 
-      if (file) {
-        setValue('photoURL', newFile, { shouldValidate: true });
-      }
-    },
-    [setValue]
-  );
+  //     if (file) {
+  //       setValue('photoURL', newFile, { shouldValidate: true });
+  //     }
+  //   },
+  //   [setValue]
+  // );
 
   return (
     <FormProvider methods={methods} onSubmit={onSubmit}>
       <Grid container spacing={3}>
-        <Grid xs={12} md={4}>
-          <Card sx={{ pt: 10, pb: 5, px: 3, textAlign: 'center' }}>
+        {/* <Grid xs={12} md={4}> */}
+          {/* <Card sx={{ pt: 10, pb: 5, px: 3, textAlign: 'center' }}>
             <RHFUploadAvatar
               name="photoURL"
               maxSize={3145728}
@@ -119,7 +123,7 @@ export default function AccountGeneral() {
                   <br /> max size of {fData(3145728)}
                 </Typography>
               }
-            />
+            /> */}
 
             {/* <RHFSwitch
               name="isPublic"
@@ -131,8 +135,8 @@ export default function AccountGeneral() {
             <Button variant="soft" color="error" sx={{ mt: 3 }}>
               Delete User
             </Button> */}
-          </Card>
-        </Grid>
+           {/* </Card> */}
+        {/* </Grid> */}
 
         <Grid xs={12} md={8}>
           <Card sx={{ p: 3 }}>
@@ -145,12 +149,12 @@ export default function AccountGeneral() {
                 sm: 'repeat(2, 1fr)',
               }}
             >
-              <RHFTextField name="displayName" label="Name" />
-              <RHFTextField name="email" label="Email Address" />
-              <RHFTextField name="phoneNumber" label="Phone Number" />
-              <RHFTextField name="address" label="Address" />
+              <RHFTextField name="name" label="Nombre" disabled/>
+              <RHFTextField name="lastName" label="Apellidos" disabled/>
+              <RHFTextField name="email" label="Correo Electrónico" disabled/>
+              <RHFTextField name="cif" label="CIF" disabled/>
 
-              <RHFAutocomplete
+              {/* <RHFAutocomplete
                 name="country"
                 type="country"
                 label="Country"
@@ -161,16 +165,16 @@ export default function AccountGeneral() {
 
               <RHFTextField name="state" label="State/Region" />
               <RHFTextField name="city" label="City" />
-              <RHFTextField name="zipCode" label="Zip/Code" />
+              <RHFTextField name="zipCode" label="Zip/Code" /> */}
             </Box>
 
-            <Stack spacing={3} alignItems="flex-end" sx={{ mt: 3 }}>
+            {/* <Stack spacing={3} alignItems="flex-end" sx={{ mt: 3 }}>
               <RHFTextField name="about" multiline rows={4} label="About" />
 
               <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
                 Save Changes
               </LoadingButton>
-            </Stack>
+            </Stack> */}
           </Card>
         </Grid>
       </Grid>

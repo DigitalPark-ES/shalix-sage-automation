@@ -5,6 +5,7 @@ import { AuthGuard } from 'src/auth/guard';
 import DashboardLayout from 'src/layouts/dashboard';
 
 import { LoadingScreen } from 'src/components/loading-screen';
+import AlbaranListPage from 'src/pages/dashboard/albaran/list';
 
 // ----------------------------------------------------------------------
 
@@ -25,9 +26,9 @@ const OrderListPage = lazy(() => import('src/pages/dashboard/order/list'));
 const OrderDetailsPage = lazy(() => import('src/pages/dashboard/order/details'));
 // INVOICE
 const InvoiceListPage = lazy(() => import('src/pages/dashboard/invoice/list'));
-const InvoiceDetailsPage = lazy(() => import('src/pages/dashboard/invoice/details'));
-const InvoiceCreatePage = lazy(() => import('src/pages/dashboard/invoice/new'));
-const InvoiceEditPage = lazy(() => import('src/pages/dashboard/invoice/edit'));
+// const InvoiceDetailsPage = lazy(() => import('src/pages/dashboard/invoice/details'));
+// const InvoiceCreatePage = lazy(() => import('src/pages/dashboard/invoice/new'));
+// const InvoiceEditPage = lazy(() => import('src/pages/dashboard/invoice/edit'));
 // USER
 const UserProfilePage = lazy(() => import('src/pages/dashboard/user/profile'));
 const UserCardsPage = lazy(() => import('src/pages/dashboard/user/cards'));
@@ -118,19 +119,19 @@ export const dashboardRoutes = [
         children: [
           { element: <InvoiceListPage />, index: true },
           { path: 'list', element: <InvoiceListPage /> },
-          { path: ':id', element: <InvoiceDetailsPage /> },
-          { path: ':id/edit', element: <InvoiceEditPage /> },
-          { path: 'new', element: <InvoiceCreatePage /> },
+          // { path: ':id', element: <InvoiceDetailsPage /> },
+          // { path: ':id/edit', element: <InvoiceEditPage /> },
+          // { path: 'new', element: <InvoiceCreatePage /> },
         ],
       },
       {
         path: 'albaranes',
         children: [
-          { element: <InvoiceListPage />, index: true },
-          { path: 'list', element: <InvoiceListPage /> },
-          { path: ':id', element: <InvoiceDetailsPage /> },
-          { path: ':id/edit', element: <InvoiceEditPage /> },
-          { path: 'new', element: <InvoiceCreatePage /> },
+          { element: <AlbaranListPage />, index: true },
+          { path: 'list', element: <AlbaranListPage /> },
+          // { path: ':id', element: <InvoiceDetailsPage /> },
+          // { path: ':id/edit', element: <InvoiceEditPage /> },
+          // { path: 'new', element: <InvoiceCreatePage /> },
         ],
       },
       {

@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import { useMemo, useEffect, useReducer, useCallback } from 'react';
 // import { doc, getDoc, setDoc, collection, getFirestore } from 'firebase/firestore';
-import { doc, setDoc, collection, getFirestore } from 'firebase/firestore';
+import { query, where, getDocs, collection, getFirestore } from "firebase/firestore";
 import {
   getAuth,
   signOut,
@@ -10,10 +10,10 @@ import {
   GoogleAuthProvider,
   GithubAuthProvider,
   TwitterAuthProvider,
-  sendEmailVerification,
+  // sendEmailVerification,
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
+  // createUserWithEmailAndPassword,
 } from 'firebase/auth';
 
 import { firebaseApp } from './lib';
@@ -57,16 +57,20 @@ export function AuthProvider({ children }) {
         if (user) {
           // if (user.emailVerified) {
             // const userProfile = doc(DB, 'users', user.uid);
-
+            const docs = await getDocs(
+              query(collection(DB, 'users'), 
+                  where("uid", "==", user.uid),
+              ));
+          
             // const docSnap = await getDoc(userProfile);
 
-            // const profile = docSnap.data();
+            const profile = docs.docs[0].data();
             dispatch({
               type: 'INITIAL',
               payload: {
                 user: {
                   ...user,
-                  // ...profile,
+                  ...profile,
                   id: user.uid,
                   role: 'admin',
                 },
@@ -175,23 +179,23 @@ export function AuthProvider({ children }) {
   }, []);
 
   // REGISTER
-  const register = useCallback(async (email, password, firstName, lastName) => {
-    const newUser = await createUserWithEmailAndPassword(AUTH, email, password);
+  // const register = useCallback(async (email, password, firstName, lastName) => {
+  //   const newUser = await createUserWithEmailAndPassword(AUTH, email, password);
 
-    /*
-     * (1) If skip emailVerified
-     * Remove : await sendEmailVerification(newUser.user);
-     */
-    await sendEmailVerification(newUser.user);
+  //   /*
+  //    * (1) If skip emailVerified
+  //    * Remove : await sendEmailVerification(newUser.user);
+  //    */
+  //   await sendEmailVerification(newUser.user);
 
-    const userProfile = doc(collection(DB, 'users'), newUser.user?.uid);
+  //   const userProfile = doc(collection(DB, 'users'), newUser.user?.uid);
 
-    await setDoc(userProfile, {
-      uid: newUser.user?.uid,
-      email,
-      displayName: `${firstName} ${lastName}`,
-    });
-  }, []);
+  //   await setDoc(userProfile, {
+  //     uid: newUser.user?.uid,
+  //     email,
+  //     displayName: `${firstName} ${lastName}`,
+  //   });
+  // }, []);
 
   // LOGOUT
   const logout = useCallback(async () => {
@@ -223,7 +227,7 @@ export function AuthProvider({ children }) {
       //
       login,
       logout,
-      register,
+      // register,
       forgotPassword,
       loginWithGoogle,
       loginWithGithub,
@@ -235,7 +239,7 @@ export function AuthProvider({ children }) {
       //
       login,
       logout,
-      register,
+      // register,
       forgotPassword,
       loginWithGithub,
       loginWithGoogle,

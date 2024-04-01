@@ -5,15 +5,15 @@ import { InvoiceListView } from 'src/sections/invoice/view';
 
 // ----------------------------------------------------------------------
 
-export default function InvoiceListPage() {
+export default function AlbaranListPage() {
   const { user } = useAuthContext();
   return (
     <>
       <Helmet>
-        <title>Dashboard: Facturas</title>
+        <title>Dashboard: Albaranes</title>
       </Helmet>
 
-      <InvoiceListView documentType='INVOICE' cif={user.cif} heading='Facturas'/>
+      <InvoiceListView documentType='ALBARAN' cif={user.cif} heading='Albaranes'/>
     </>
   );
 }

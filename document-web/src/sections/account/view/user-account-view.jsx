@@ -11,7 +11,7 @@ import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 
 import AccountGeneral from '../account-general';
-import AccountChangePassword from '../account-change-password';
+// import AccountChangePassword from '../account-change-password';
 
 // ----------------------------------------------------------------------
 
@@ -21,11 +21,11 @@ const TABS = [
     label: 'General',
     icon: <Iconify icon="solar:user-id-bold" width={24} />,
   },
-  {
-    value: 'security',
-    label: 'Security',
-    icon: <Iconify icon="ic:round-vpn-key" width={24} />,
-  },
+  // {
+  //   value: 'security',
+  //   label: 'Security',
+  //   icon: <Iconify icon="ic:round-vpn-key" width={24} />,
+  // },
 ];
 
 // ----------------------------------------------------------------------
@@ -67,7 +67,7 @@ export default function AccountView() {
 
       {currentTab === 'general' && <AccountGeneral />}
 
-      {currentTab === 'security' && <AccountChangePassword />}
+      {/* {currentTab === 'security' && <AccountChangePassword />} */}
     </Container>
   );
 }
