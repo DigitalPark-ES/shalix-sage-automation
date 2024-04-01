@@ -114,7 +114,7 @@ export default function FirebaseLoginView() {
         variant="contained"
         loading={isSubmitting}
       >
-        Login
+        Ingresar
       </LoadingButton>
     </Stack>
   );
