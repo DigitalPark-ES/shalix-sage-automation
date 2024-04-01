@@ -373,10 +373,3 @@ main()
 
 ## TODO: Procesar todo lo que esta en la carpeta por separado
 ## TODO: Eliminar archivo al procesarse completamente SI DIFERENTE DE FAILED
-
-
-## /
-## Documents
-    ## CIF
-          ## ALBARAN
-          ## FACTURAS
