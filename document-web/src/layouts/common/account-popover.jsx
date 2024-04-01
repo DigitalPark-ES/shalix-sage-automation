@@ -12,7 +12,7 @@ import Typography from '@mui/material/Typography';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
-import { useMockedUser } from 'src/hooks/use-mocked-user';
+// import { useMockedUser } from 'src/hooks/use-mocked-user';
 
 import { useAuthContext } from 'src/auth/hooks';
 
@@ -28,7 +28,7 @@ const OPTIONS = [
     linkTo: '/',
   },
   {
-    label: 'Profile',
+    label: 'Perfil',
     linkTo: paths.dashboard.user.account,
   },
 ];
@@ -38,9 +38,9 @@ const OPTIONS = [
 export default function AccountPopover() {
   const router = useRouter();
 
-  const { user } = useMockedUser();
+  // const { user } = useMockedUser();
 
-  const { logout } = useAuthContext();
+  const { logout, user } = useAuthContext();
 
   const { enqueueSnackbar } = useSnackbar();
 
@@ -120,7 +120,7 @@ export default function AccountPopover() {
           onClick={handleLogout}
           sx={{ m: 1, fontWeight: 'fontWeightBold', color: 'error.main' }}
         >
-          Logout
+          Salir
         </MenuItem>
       </CustomPopover>
     </>
