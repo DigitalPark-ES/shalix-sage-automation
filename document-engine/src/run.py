@@ -76,6 +76,7 @@ def is_invoice(pdf_text):
 def remove_directory(path):
     try:
         shutil.rmtree(path)
+        create_if_not_exists(path)
         logger.info(f"== Path {path} removed.")
     except OSError as e:
         logger.error(f"== ❌ Error: {e}")
@@ -402,34 +403,41 @@ def main():
     configure_database()
     
     ## TODO: Procesar todo lo que esta en la carpeta por separado LOOP
-    split_document_pages(os.path.join(input_path, '100_same.pdf'))
+    def process_document(document_path):
+        split_document_pages(document_path)
 
-    map_documents(output_s1_split_path)
-    
-    merge_documents()
+        map_documents(output_s1_split_path)
+        
+        merge_documents()
 
-    # wait
-    time.sleep(2)
+        # wait
+        time.sleep(2)
 
-    upload_documents()
+        upload_documents()
 
-    remove_all_rows_in_non_failed_status()
+        remove_all_rows_in_non_failed_status()
 
-    # wait
-    time.sleep(2)
+        # wait
+        time.sleep(2)
 
-    if get_documents_failed_count() == 0:
-        logger.info("== ALL WAS PROCESSED")
-    else:
-        logger.warning("== Moving failing documents to DLQ")
-        move_failed_documents_to_dlq()
-        remove_all_rows()
+        if get_documents_failed_count() == 0:
+            logger.info("== ALL WAS PROCESSED")
+        else:
+            logger.warning("== Moving failing documents to DLQ")
+            move_failed_documents_to_dlq()
+            remove_all_rows()
 
-    # wait
-    time.sleep(2)
+        # wait
+        time.sleep(2)
 
-    remove_directory(output_final_path)
-    remove_directory(output_s1_split_path)
+        remove_directory(output_final_path)
+        remove_directory(output_s1_split_path)
+
+    # Iterate throught all documents
+    for index, invoice_file_name in enumerate(os.listdir(input_path)):
+        logger.info(f"******************************* {index} ******************************************")
+        process_document(os.path.join(input_path, invoice_file_name))
+        logger.info("***************************************************************************")
 
     db_connection.close()
     
