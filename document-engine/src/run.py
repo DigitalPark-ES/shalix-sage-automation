@@ -98,28 +98,29 @@ def configure_database():
             emited_at DATE,
             page INTEGER,
             total REAL,
-            path TEXT
+            path TEXT,
+            albaran_number TEXT
             )
     ''')
     logger.info("Database ready!")
 
-def insert_document(doc_type, status, doc_number, client_id, cif, emited_at, page, total, path):
+def insert_document(doc_type, status, doc_number, client_id, cif, emited_at, page, total, path, albaran_number):
     db_cursor.execute(
-        """INSERT INTO documents (doc_type, status, doc_number, client_id, cif, emited_at, page, total, path) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""", 
-            (doc_type, status, doc_number, client_id, cif, emited_at, page, total, path))
+        """INSERT INTO documents (doc_type, status, doc_number, client_id, cif, emited_at, page, total, path, albaran_number) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""", 
+            (doc_type, status, doc_number, client_id, cif, emited_at, page, total, path, albaran_number))
 
-def insert_new_invoice(doc_number, client_id, cif, emited_at, page, total, path, success=True):
+def insert_new_invoice(doc_number, client_id, cif, emited_at, page, total, path, albaran_number, success=True):
     insert_document(
         'INVOICE', 
         'PENDING' if success else 'FAILED',
-        doc_number, client_id, cif, emited_at, page, total, path)
+        doc_number, client_id, cif, emited_at, page, total, path, albaran_number)
 
-def insert_merged_invoice(doc_type, doc_number, client_id, cif, emited_at, total, path, success=True):
+def insert_merged_invoice(doc_type, doc_number, client_id, cif, emited_at, total, path, albaran_number, success=True):
     insert_document(
         doc_type, 
         'READY' if success else 'FAILED',
-        doc_number, client_id, cif, emited_at, 1, total, path)
+        doc_number, client_id, cif, emited_at, 1, total, path, albaran_number)
 
 def insert_albaran(doc_number, cif, emited_at, page, total, path):
     insert_document('ALBARAN', 'PENDING', doc_number, 'client_id', cif, emited_at, page, total, path)
@@ -138,7 +139,7 @@ def update_document(doc_number, client_id, status, doc_type):
     
 def find_documents_rows(status='PENDING'):
     db_cursor.execute('''
-                  SELECT id, doc_number, client_id, cif, emited_at, page, total, path, doc_type
+                  SELECT id, doc_number, client_id, cif, emited_at, page, total, path, doc_type, albaran_number
                   FROM documents
                   WHERE status = ?
                   ORDER BY doc_number, total desc
@@ -212,29 +213,32 @@ def map_documents(splitted_documents_source_path):
         invoice_number = re.search(r'(\d+)\s*GRACIAS POR SU PEDIDO', pdf_text).group(1)
         invoice_date = re.search(r'CIF/DNI:\s*(\d{2}-\d{2}-\d{4})', pdf_text).group(1)
         client_id = re.search(r'CIF/DNI: \d{2}-\d{2}-\d{4}\n([A-Z0-9]+)', pdf_text).group(1)
-        total_result = re.search(r'(\d{1,3}(?:,\d{2})?)(?=\s*FORMA DE PAGO TOTAL FACTURA)', pdf_text)
+        total_result_re = re.search(r'(\d{1,3}(?:,\d{2})?)(?=\s*FORMA DE PAGO TOTAL FACTURA)', pdf_text)
+        albaran_number_re = re.search(r'ALBARÁN Nº : \w{3} / (\d+(\.\d+)?)', pdf_text)
 
         if cif and invoice_number and invoice_date and client_id:
             page = get_new_pdf_sequence(invoice_number)
-            total = total_result.group(1) if total_result else 0
+            total = total_result_re.group(1) if total_result_re else 0
+            albaran_number = albaran_number_re.group(1) if albaran_number_re else -1
+            albaran_number = int(f'{albaran_number}'.replace('.', '').replace(',', ''))
             new_pdf_file_name = f"INVOICE_{invoice_number}_{cif}_{invoice_date}_{page}.pdf"
             new_pdf_file_path = os.path.join(output_final_path, new_pdf_file_name)
             copy_file(invoice_pdf_path, new_pdf_file_path)
-            insert_new_invoice(invoice_number, client_id, cif, invoice_date, page, total, new_pdf_file_path)
+            insert_new_invoice(invoice_number, client_id, cif, invoice_date, page, total, new_pdf_file_path, albaran_number)
             logger.info(f"== - {index} Invoce PDF File Mapped for CIF [{cif}] [{new_pdf_file_path}] ✅")
         else:
-            insert_new_invoice(invoice_number, client_id, cif, invoice_date, page, 0, new_pdf_file_path, False)
+            insert_new_invoice(invoice_number, client_id, cif, invoice_date, page, 0, new_pdf_file_path, -1, False)
             logger.error(f"== - {index} Invoice PDF Mapping failed for [{invoice_pdf_path}] ❌")
 
     def map_albaran(index, pdf_text):
         albaran_number = re.search(r'PVV\n(\d+)', pdf_text).group(1)
         albaran_date = re.search(r'(\d{2}/\d{2}/\d{4})', pdf_text).group(1).strip().replace("/", "-")
-        total_result = re.search(r'BULTOS\s+(\d+,\d+)\s+VOLUMEN', pdf_text)
+        total_result_re = re.search(r'BULTOS\s+(\d+,\d+)\s+VOLUMEN', pdf_text)
         cif = re.search(r'(\w+) CONSULTAS LLAME TELEFONO', pdf_text).group(1)
 
         if albaran_number and albaran_date and cif:
             page = get_new_pdf_sequence(albaran_number)
-            total = total_result.group(1) if total_result else 0
+            total = total_result_re.group(1) if total_result_re else 0
             new_pdf_file_name = f"ALBARAN_{albaran_number}_{cif}_{albaran_date}_{page}.pdf"
             new_pdf_file_path = os.path.join(output_final_path, new_pdf_file_name)
             copy_file(invoice_pdf_path, new_pdf_file_path)
@@ -263,13 +267,14 @@ def merge_documents():
     def merge_docs(doc_number, documents, doc_type):
         merge_pdf = PdfWriter()
         total = 0
-        # id, doc_number, client_id, cif, emited_at, page, total, path
+        # id, doc_number, client_id, cif, emited_at, page, total, path, albaran_number
         for document_row in documents:
             path = document_row[7]
             id = document_row[0]
             client_id = document_row[2]
             cif = document_row[3]
             emited_at = document_row[4]
+            albaran_number = document_row[8]
             raw_total = float(str(document_row[6]).replace(',', '.'))
             total = raw_total if raw_total > 0 else total
             with open(path, 'rb') as pdf_file:
@@ -279,7 +284,7 @@ def merge_documents():
         merged_file_name = f"{doc_type}_{doc_number}_{cif}_{emited_at}_all.pdf"
         merged_file_path = os.path.join(output_final_path, merged_file_name)
         create_pdf_file(merge_pdf, merged_file_path)
-        insert_merged_invoice(doc_type, doc_number, client_id, cif, emited_at, total, merged_file_path)
+        insert_merged_invoice(doc_type, doc_number, client_id, cif, emited_at, total, merged_file_path, albaran_number)
         update_merged_invoices(doc_number, client_id, doc_type)
         logger.info(f"=== - 📚✅ Merged: {merged_file_path}")
 
@@ -314,12 +319,13 @@ def upload_documents():
         total = document_row[6]
         path = document_row[7]
         doc_type = document_row[8]
+        albaran_number = document_row[9]
         upload_file_name=os.path.basename(path)
 
         logger.info(f"=== Uploading {doc_number} [{upload_file_name}] path {path}")
 
         try:
-            blob = bucket.blob(f"documents/{cif}/{doc_type}/{upload_file_name}")
+            blob = bucket.blob(f"documents/{cif}/{doc_type}/{doc_number}.pdf")
             blob.upload_from_filename(path)
 
             blob.make_public()
@@ -334,6 +340,7 @@ def upload_documents():
                 'total': total,
                 'doc_type': doc_type,
                 'pdf_url': pdf_url,
+                'albaran_number': albaran_number
             })
 
             update_document_by_id(id, 'UPLOADED')
