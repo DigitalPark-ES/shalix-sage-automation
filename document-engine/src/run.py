@@ -100,7 +100,22 @@ def configure_database():
             total REAL,
             path TEXT,
             albaran_number TEXT
-            )
+        );
+    ''')
+    db_cursor.execute('''
+         CREATE TABLE IF NOT EXISTS documents_dlq (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            doc_type TEXT,
+            status TEXT,
+            doc_number TEXT,
+            client_id TEXT,       
+            cif TEXT,
+            emited_at DATE,
+            page INTEGER,
+            total REAL,
+            path TEXT,
+            albaran_number TEXT
+            );
     ''')
     logger.info("Database ready!")
 
@@ -153,6 +168,12 @@ def remove_all_rows_in_non_failed_status():
                     ''')
     db_connection.commit()
 
+def remove_all_rows():
+    db_cursor.execute('''
+                   DELETE FROM documents
+                    ''')
+    db_connection.commit()
+
 def find_documents(status='PENDING'):
     resultset = find_documents_rows(status)
     documents_map = {}
@@ -170,6 +191,18 @@ def update_document_by_id(id, status):
                    UPDATE documents SET status = ?
                       WHERE id = ?
                     ''', (status, id,))
+
+def get_documents_failed_count():
+    db_cursor.execute('SELECT COUNT(*) FROM documents')
+    return db_cursor.fetchone()[0]
+
+
+def move_failed_documents_to_dlq():
+    db_cursor.execute('''
+                   INSERT INTO documents_dlq
+                      SELECT * FROM documents
+                    ''')
+    db_connection.commit()
 
 ## Business Logic ##################################################
 
@@ -385,18 +418,20 @@ def main():
     # wait
     time.sleep(2)
 
+    if get_documents_failed_count() == 0:
+        logger.info("== ALL WAS PROCESSED")
+    else:
+        logger.warning("== Moving failing documents to DLQ")
+        move_failed_documents_to_dlq()
+        remove_all_rows()
+
+    # wait
+    time.sleep(2)
+
     remove_directory(output_final_path)
-
-    # GET number of rows
-
-    ## IF NO RECORDS FOUND REMOVE BOTHER DIRECTORIES, OUTPUT AND MIDDLE
-    ## IF SOMETHING NOT WORK, MOVE TO A FOLDER validate.
-    
-    # remove_directory(output_s1_split_path)
+    remove_directory(output_s1_split_path)
 
     db_connection.close()
-
-## TODO: Eliminar archivo al procesarse completamente SI DIFERENTE DE FAILED and UPLOADED_FAILED
     
     logger.info("= Job Finihsed =========================================================")
 
