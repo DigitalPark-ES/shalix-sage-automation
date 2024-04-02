@@ -18,10 +18,12 @@ import { useRouter } from 'src/routes/hooks';
 import { isAfter, isBetween } from 'src/utils/format-time';
 
 import { useGetDocuments } from 'src/hooks/firestore/use-get-documents';
+import { useAuthContext } from 'src/auth/hooks';
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
+
 import {
   useTable,
   emptyRows,
@@ -52,9 +54,12 @@ const defaultFilters = {
   endDate: null,
 };
 
+export const DOCUMENTS_BUCKET_PATH = import.meta.env.VITE_APP_DOCUMENTS_BUCKET_PATH;
+
 // ----------------------------------------------------------------------
 
 export default function InvoiceListView({documentType, cif, heading}) {
+  const { user } = useAuthContext();
   const { documents, fetch } = useGetDocuments(documentType, cif); // fetching
 
   const settings = useSettingsContext();
@@ -105,6 +110,14 @@ export default function InvoiceListView({documentType, cif, heading}) {
   const handleEditRow = useCallback(
     (id) => {
       router.push(paths.dashboard.invoice.edit(id));
+    },
+    [router]
+  );
+
+  const handleViewAlbaranRow = useCallback(
+    (albaranNumber) => {
+      const downloadUri = `${DOCUMENTS_BUCKET_PATH}/${user.cif}/ALBARAN/${albaranNumber}.pdf`;
+      window.open(downloadUri, '_blank');
     },
     [router]
   );
@@ -205,6 +218,7 @@ export default function InvoiceListView({documentType, cif, heading}) {
                         selected={table.selected.includes(row.id)}
                         onSelectRow={() => table.onSelectRow(row.id)}
                         onViewRow={() => handleViewRow(row.downloadUri)}
+                        onViewAlbaranRow={() => handleViewAlbaranRow(row.albaranNumber)}
                         onEditRow={() => handleEditRow(row.id)}
                         onDeleteRow={() => {}}
                       />

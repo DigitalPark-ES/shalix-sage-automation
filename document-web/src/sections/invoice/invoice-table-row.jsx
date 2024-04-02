@@ -25,6 +25,7 @@ export default function InvoiceTableRow({
   selected,
   onSelectRow,
   onViewRow,
+  onViewAlbaranRow,
   onEditRow,
   onDeleteRow,
 }) {
@@ -88,8 +89,19 @@ export default function InvoiceTableRow({
           }}
         >
           <Iconify icon="solar:eye-bold" />
-          Ver Documento
+          Factura
         </MenuItem>
+        {
+          (row.albaranNumber !== -1 && `${row.albaranNumber}`.trim() !== 'INVOICE' ) && (<MenuItem
+            onClick={() => {
+              onViewAlbaranRow();
+              popover.onClose();
+            }}
+          >
+            <Iconify icon="solar:eye-bold" />
+            Albarán [{row.albaranNumber}]
+          </MenuItem>)
+        }
 
         {/* <MenuItem
           onClick={() => {
@@ -122,6 +134,7 @@ InvoiceTableRow.propTypes = {
   onEditRow: PropTypes.func,
   onSelectRow: PropTypes.func,
   onViewRow: PropTypes.func,
+  onViewAlbaranRow: PropTypes.func,
   row: PropTypes.object,
   selected: PropTypes.bool,
 };

@@ -360,23 +360,24 @@ def main():
     check_workspace()
     configure_database()
     
+    ## TODO: Procesar todo lo que esta en la carpeta por separado LOOP
     split_document_pages(os.path.join(input_path, '100_same.pdf'))
+
     map_documents(output_s1_split_path)
+    
     merge_documents()
+    
     remove_directory(output_s1_split_path)
 
+    # wait
     time.sleep(2)
 
     upload_documents()
-
-
-    # TODO In another function, Do the Cleanup, remove Db records, remove folders.
-    ## Remove only documents that were uploaded.
-
+    
     db_connection.close()
+
+## TODO: Eliminar archivo al procesarse completamente SI DIFERENTE DE FAILED and UPLOADED_FAILED
+    
     logger.info("= Job Finihsed =========================================================")
 
 main()
-
-## TODO: Procesar todo lo que esta en la carpeta por separado
-## TODO: Eliminar archivo al procesarse completamente SI DIFERENTE DE FAILED

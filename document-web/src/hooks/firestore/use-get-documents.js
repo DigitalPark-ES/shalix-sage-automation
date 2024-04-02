@@ -23,6 +23,7 @@ export function useGetDocuments(documentType, cif) {
                 return {
                     id: c.id,
                     documentNumber: data.doc_number,
+                    albaranNumber: data.albaran_number,
                     total: parseFloat(data.total),
                     downloadUri: data.pdf_url,
                     emitedAt: new Date(
