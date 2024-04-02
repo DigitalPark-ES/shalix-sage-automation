@@ -147,6 +147,12 @@ def find_documents_rows(status='PENDING'):
 
     return db_cursor.fetchall()
 
+def remove_all_rows_in_non_failed_status():
+    db_cursor.execute('''
+                   DELETE FROM documents WHERE status NOT IN ('FAILED', 'UPLOAD_FAILED')
+                    ''')
+    db_connection.commit()
+
 def find_documents(status='PENDING'):
     resultset = find_documents_rows(status)
     documents_map = {}
@@ -267,6 +273,7 @@ def merge_documents():
     def merge_docs(doc_number, documents, doc_type):
         merge_pdf = PdfWriter()
         total = 0
+        albaran_num = -1
         # id, doc_number, client_id, cif, emited_at, page, total, path, albaran_number
         for document_row in documents:
             path = document_row[7]
@@ -274,9 +281,10 @@ def merge_documents():
             client_id = document_row[2]
             cif = document_row[3]
             emited_at = document_row[4]
-            albaran_number = document_row[8]
+            albaran_number = document_row[9]
             raw_total = float(str(document_row[6]).replace(',', '.'))
             total = raw_total if raw_total > 0 else total
+            albaran_num = albaran_number if albaran_number != -1 else albaran_num
             with open(path, 'rb') as pdf_file:
                 opened_file = PdfReader(pdf_file)
                 merge_pdf.add_page(opened_file.pages[0])
@@ -366,14 +374,26 @@ def main():
     map_documents(output_s1_split_path)
     
     merge_documents()
-    
-    remove_directory(output_s1_split_path)
 
     # wait
     time.sleep(2)
 
     upload_documents()
+
+    remove_all_rows_in_non_failed_status()
+
+    # wait
+    time.sleep(2)
+
+    remove_directory(output_final_path)
+
+    # GET number of rows
+
+    ## IF NO RECORDS FOUND REMOVE BOTHER DIRECTORIES, OUTPUT AND MIDDLE
+    ## IF SOMETHING NOT WORK, MOVE TO A FOLDER validate.
     
+    # remove_directory(output_s1_split_path)
+
     db_connection.close()
 
 ## TODO: Eliminar archivo al procesarse completamente SI DIFERENTE DE FAILED and UPLOADED_FAILED
